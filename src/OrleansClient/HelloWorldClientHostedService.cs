@@ -19,14 +19,10 @@ namespace OrleansClient
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var friend = this._client.GetGrain<IHello>(0);
-            string response1 = "no value";
-            string response2 = "no value";
-            await Task.Run(async () => { response1 = await friend.SayHello($"1st grain call from thread {Environment.CurrentManagedThreadId}"); });
-            await Task.Run(async () => { response2 = await friend.SayHello($"2nd grain call from thread {Environment.CurrentManagedThreadId}"); });
-            
-            Console.WriteLine($"{response1}");
-            Console.WriteLine($"{response2}");
+            RequestContext.ActivityId = Guid.NewGuid();
+            var task1 = Task.Run(() => { return _client.GetGrain<IHello>(0).Stop(null); });
+            var task2 = Task.Run(() => { return _client.GetGrain<IHello>(1).Stop(0); });
+            await Task.WhenAll(task1, task2);
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

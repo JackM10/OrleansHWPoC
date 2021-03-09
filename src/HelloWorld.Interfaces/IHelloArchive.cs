@@ -9,6 +9,7 @@ namespace HelloWorld.Interfaces
     public interface IHelloArchive : Orleans.IGrainWithIntegerKey
     {
         Task<string> SayHello(string greeting);
+        Task StopHelloGrain(int id);
 
         Task<IEnumerable<string>> GetGreetings();
     }

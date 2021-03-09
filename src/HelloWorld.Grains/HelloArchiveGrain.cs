@@ -24,6 +24,11 @@ namespace HelloWorld.Grains
             return $"You said: '{greeting}', I say: Hello!";
         }
 
+        public async Task StopHelloGrain(int id)
+        {
+            await GrainFactory.GetGrain<IHello>(id).Stop(null);
+        }
+
         public Task<IEnumerable<string>> GetGreetings() => Task.FromResult<IEnumerable<string>>(this._archive.State.Greetings);
     }
 
