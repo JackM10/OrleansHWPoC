@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using System;
 using Orleans.Runtime;
+using Orleans;
 
 namespace HelloWorld.Grains
 {
@@ -18,16 +19,28 @@ namespace HelloWorld.Grains
             this.logger = logger;
         }  
 
-        async Task<string> IHello.Stop(int? parameter)
+        async Task<string> IHello.Stop(Guid? id)
         {
-            if(parameter != null)
+            logger.LogError($"{this.GetPrimaryKey()} Entry Stop with params {id} in HelloGrain");
+            if (id != null)
             {
-                await GrainFactory.GetGrain<IHelloArchive>(0).StopHelloGrain((int)parameter);
+                logger.LogError($"{this.GetPrimaryKey()} stopping grain with id: {id}");
+                await GrainFactory.GetGrain<IHelloArchive>(Guid.Empty).StopHelloGrain((Guid)id);
             }
-            Console.WriteLine($"Staring execution of Grain method {RequestContext.ActivityId}");
+
+            logger.LogError($"{this.GetPrimaryKey()} Staring execution of Stop {RequestContext.ActivityId}, id: {id}");
             await Task.Delay(1000);
-            Console.WriteLine("Execution of grain completed");
-            return "";
+            logger.LogError($"{this.GetPrimaryKey()} Finish execution of Stop with parameter: {id}");
+
+            return string.Empty;
+        }
+
+        public override async Task OnActivateAsync()
+        {
+            logger.LogError($"starting OnActivate {this.GetPrimaryKey()}");
+            await base.OnActivateAsync();
+            await GrainFactory.GetGrain<IHelloArchive>(Guid.NewGuid()).DoNothing();
+            logger.LogError($"Finishing OnActivate {this.GetPrimaryKey()}");
         }
     }
 }

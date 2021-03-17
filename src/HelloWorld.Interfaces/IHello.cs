@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace HelloWorld.Interfaces
@@ -5,8 +6,8 @@ namespace HelloWorld.Interfaces
     /// <summary>
     /// Orleans grain communication interface IHello
     /// </summary>
-    public interface IHello : Orleans.IGrainWithIntegerKey
+    public interface IHello : Orleans.IGrainWithGuidKey
     {
-        Task<string> Stop(int? parameter);
+        Task<string> Stop(Guid? id);
     }
 }
